@@ -114,13 +114,22 @@ maxFl (x:xs)
 squareI :: Int -> Int
 squareI n = n * n
 
-mod :: Int -> Int -> Int
-mod n k 
- | n == 
+myAbsI :: Int -> Int
+myAbsI n
+ | n < 0 = (-n)
+ | otherwise = n
+
+myMod :: Int -> Int -> Int
+myMod n k = hmod n k 1
+ where 
+  hmod :: Int -> Int -> Int -> Int
+  hmod n k x
+   | k * x > n = n - k * (x-1)
+   | otherwise = hmod n k (x+1)
 
 powerOfTwo :: Int -> Int
 powerOfTwo 0 = 1
 powerOfTwo n
- | n%2 == 0 = squareI (n/2)
- | otherwise = squareI ((n-1)/2)
+ | n `myMod` 2 == 0 = squareI (powerOfTwo (n `div` 2))
+ | otherwise = (squareI (powerOfTwo ((n-1) `div` 2))) * 2
 
