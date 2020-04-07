@@ -1,5 +1,3 @@
---import Prelude
-
 -- Exercies 3.7 Page 37
 threeDifferent :: Int -> Int -> Int -> Bool
 threeDifferent m n p = m /= n && m /= p && n /= p
