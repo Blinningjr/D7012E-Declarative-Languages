@@ -136,3 +136,60 @@ myAnd1, myOr1 :: [Bool] -> Bool
 myAnd1 xs = foldr (&&) True xs
 myOr1 xs = foldr (||) False xs 
 
+
+-- Exercise 7.7 Page 125
+myUnique :: [Int] -> [Int]
+myUnique [] = []
+myUnique (x:xs)
+ | containsN x xs = hmyUnique [x] xs
+ | otherwise = [x] ++ hmyUnique [x] xs
+  where
+   hmyUnique :: [Int] -> [Int] -> [Int]
+   hmyUnique l [] = []
+   hmyUnique l (x:xs) = if (containsN x l) || (containsN x xs) then hmyUnique (l ++ [x]) xs else [x] ++ hmyUnique (l ++ [x]) xs 
+
+
+-- Exercise 7.8 Page 125
+myReverse :: [a] -> [a]
+myReverse [] = []
+myReverse (x:xs) = myReverse xs ++ [x]
+
+myUnzip :: [(a, b)] -> ([a], [b])
+myUnzip [] = ([], [])
+myUnzip l = (c:a, d:b)
+ where
+  (x:xs) = l 
+  (c, d) =  x
+  (a, b) = myUnzip xs
+
+
+-- Exercise 7.9 Page 125
+-- Using iSort the fist element is the smallest and the last he largest.
+-- So by taking head xs we get the smallest and last for largest.
+getMinMax :: [Int] -> (Int, Int)
+getMinMax [] = (0, 0)
+getMinMax [x] = (x, x)
+getMinMax (x:xs)
+ | x < min = (x, max)
+ | x > max = (min, x)
+ | otherwise = (min, max)
+  where
+   (min, max) = getMinMax xs 
+
+
+-- Exercise 7.14 Page 128
+myTake :: Int -> [a] -> [a]
+myTake _ [] = []
+myTake n (x:xs)
+ | n < 1 = []
+ | otherwise = x : myTake (n-1) xs
+
+myDrop :: Int -> [a] -> [a]
+myDrop _ [] = []
+myDrop n (x:xs)
+ | n < 1 = x:xs
+ | otherwise = myDrop (n-1) xs
+
+mySplitAt :: Int -> [a] -> ([a], [a])
+mySplitAt n xs = (myTake n xs, myDrop n xs)
+
