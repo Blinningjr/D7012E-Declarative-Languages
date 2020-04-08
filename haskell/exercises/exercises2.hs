@@ -109,3 +109,30 @@ addFirstTwo1 xs
  | length xs == 1 = xs !! 0
  | otherwise = (xs !! 0) + (xs !! 1)
 
+
+-- Exercise 7.4 Page 120
+myProduct :: [Int] -> Int
+myProduct [] = 1
+myProduct (x:xs) = x * myProduct xs
+-- The base case must be 1 because multiplying with 1 dosen`t effect the awnser as 0 or other number do.
+
+-- Implement product using foldr
+myProduct1 :: [Int] -> Int
+myProduct1 xs = foldr (*) 1 xs
+
+
+-- Exercise 7.5 Page 120
+myAnd, myOr :: [Bool] -> Bool
+-- Base case must be True because otherwise the result would allways be False.
+myAnd [] = True
+myAnd (x:xs) = x && myAnd xs
+
+-- Base case must be False because otherwise the result would allways be True.
+myOr [] = False
+myOr (x:xs) = x || myOr xs
+
+-- Implement using foldr
+myAnd1, myOr1 :: [Bool] -> Bool
+myAnd1 xs = foldr (&&) True xs
+myOr1 xs = foldr (||) False xs 
+
