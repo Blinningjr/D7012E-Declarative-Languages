@@ -63,3 +63,49 @@ pushRight l s
  | length s < l = pushRight l (" " ++ s)
  | otherwise = s
 
+
+-- Exercise 6.29 Page 112-113
+count :: Int -> [Int] -> Int
+count n [] = 0
+count n [x]
+ | n == x = 1
+ | otherwise = 0
+count n (x:xs)
+ | n == x = 1 + count n xs
+ | otherwise = count n xs
+
+containsN :: Int -> [Int] -> Bool
+containsN n l
+ | length [ x | x <- l, n == x] == 0 = False
+ | otherwise = True
+
+removeDuplicate :: [Int] -> [Int]
+removeDuplicate [] = []
+removeDuplicate [x] = [x]
+removeDuplicate (x:xs) = hrmDup xs [x] 
+ where
+  hrmDup :: [Int] -> [Int] -> [Int]
+  hrmDup [] l = l
+  hrmDup (x:xs) l = if containsN x l then hrmDup xs l else hrmDup xs (l ++ [x])
+
+countProduct :: [Int] -> [(Int, Int)]
+countProduct l = [ (x, count x l) | x <- unique ]
+ where 
+  unique = removeDuplicate l
+-- Not done but will stop here.
+
+
+-- Exercise 7.2 Page 119
+addFirstTwo :: [Int] -> Int
+addFirstTwo [] = 0
+addFirstTwo [first] = first
+addFirstTwo (a:b:_) = a + b
+
+
+-- Exercise 7.3 Page 119
+addFirstTwo1 :: [Int] -> Int
+addFirstTwo1 xs
+ | length xs == 0 = 0
+ | length xs == 1 = xs !! 0
+ | otherwise = (xs !! 0) + (xs !! 1)
+
