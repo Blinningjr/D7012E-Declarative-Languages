@@ -368,15 +368,15 @@ formatS s = hlow (hrm s)
   hlow [] = []
   hlow (x:xs) = toLow x : hlow xs
 
+rmLast :: [a] -> [a]
+rmLast (x:xs)
+ | length (x:xs) < 2 = []
+ | otherwise = x : rmLast xs
+
 middle :: [a] -> [a]
 middle (x:xs)
  | length (x:xs) < 2 = []
  | otherwise = rmLast xs
-  where
-   rmLast :: [a] -> [a]
-   rmLast (x:xs)
-    | length (x:xs) < 2 = []
-    | otherwise = x : rmLast xs
 
 isPalin :: String -> Bool
 isPalin s = hisPalin (formatS s)
@@ -389,4 +389,24 @@ hisPalin l
 
 
 -- Exercise 7.26 Page 133
+-- isSubseq String String
+subst :: String -> String -> String -> String
+subst oldSub newSub st
+ | isSubseq oldSub st = hsubst oldSub newSub st
+ | otherwise = st
+  where
+   hsubst :: String -> String -> String -> String
+   hsubst _ _ [] = []
+   hsubst oldSub newSub st
+    | isSubseq oldSub cs = hsubst oldSub newSub cs ++ [c]
+    | otherwise = (rmLastN len st) ++ newSub
+     where
+      rmLastN :: Int -> String -> String
+      rmLastN n st
+       | n < 1 = st
+       | otherwise = rmLastN (n-1) (rmLast st) 
+
+      c = last st
+      cs = rmLast st
+      len = length oldSub 
 
