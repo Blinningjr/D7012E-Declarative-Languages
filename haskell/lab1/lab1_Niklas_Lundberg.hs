@@ -1,17 +1,48 @@
+-- Removes the last element in a list
 rmLast :: [Int] -> [Int]
 rmLast (x:xs)
  | length (x:xs) < 2 = []
  | otherwise = x : rmLast xs
 
-sumArr :: [int] -> int
+-- Sums all elements in a list
+sumArr :: [Int] -> Int
 sumArr [] = 0
 sumArr (x:xs) = x + sumArr xs
 
-allSubArr :: [Int] -> [[Int]]
+-- Takes the first k elements from a list
+takeFirstK :: Int -> [a] -> [a]
+takeFirstK _ [] = []
+takeFirstK k (x:xs)
+ | k > 0 = x : takeFirstK (k-1) xs
+ | otherwise = []
+
+-- Sorts a list of all sublists on the size 
+quicksort :: [Int] -> [Int]
+quicksort [] = []
+quicksort (x:xs) = quicksort lhs ++ [x] ++ quicksort rhs
+ where
+  pivot :: Int -> [Int] -> ([Int], [Int])
+  pivot _ [] = ([], []) 
+  pivot p (x:xs)
+   | x < p = (x : lhs, rhs) 
+   | otherwise = (lhs, x : rhs)
+    where
+     (lhs, rhs) = pivot p xs 
+  
+  (lhs, rhs) = pivot x xs
+
+  
+
+-- Calculates all possible sublists in form [(Size, (i, j), [SubList])]
+allSubArr :: [Int] -> [(Int, (Int, Int), [Int])]
 allSubArr [] = []
-allSubArr (x:xs) = hallSubArr (x:xs) ++ allSubArr xs
+allSubArr xs = hallSubI (1, length xs) xs
  where 
-  hallSubArr :: [Int] -> [[Int]]
-  hallSubArr [] = []
-  hallSubArr xs = xs : hallSubArr (rmLast xs)
+  hallSubJ :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
+  hallSubJ _ [] = []
+  hallSubJ (i, j) xs = (sumArr xs, (i, j), xs) : hallSubJ (i, j-1) (rmLast xs)
+  
+  hallSubI :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
+  hallSubI _ [] = []
+  hallSubI (i, j) (x:xs) = hallSubJ (i, j) (x:xs) ++ hallSubI (i+1, j) xs
 
