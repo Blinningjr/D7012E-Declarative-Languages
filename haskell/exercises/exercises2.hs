@@ -1,3 +1,6 @@
+import Data.Char (ord,chr)
+
+
 -- Exercise 5.2 Page 77
 orderPair :: (Int, Int) -> (Int, Int)
 orderPair (a, b)
@@ -344,5 +347,46 @@ newJoinLine n ws = lineToString (addSpace toadd l)
   toadd = n - countLineLen l
 
 -- Exercise 7.25 Page 133
+toLow :: Char -> Char
+toLow c 
+ | ord c < ord 'a' = chr (ord c + offset)
+ | otherwise = c
+  where
+   offset = ord 'a' - ord 'A' 
+
+formatS :: String -> String
+formatS s = hlow (hrm s)
+ where
+  toRm = ['\n', ' ', '.', ',', '\t', '\'']
+  hrm :: String -> String
+  hrm [] = []
+  hrm (x:xs)
+   | myElemC x toRm = hrm xs
+   | otherwise = x : hrm xs
+  
+  hlow :: String -> String
+  hlow [] = []
+  hlow (x:xs) = toLow x : hlow xs
+
+middle :: [a] -> [a]
+middle (x:xs)
+ | length (x:xs) < 2 = []
+ | otherwise = rmLast xs
+  where
+   rmLast :: [a] -> [a]
+   rmLast (x:xs)
+    | length (x:xs) < 2 = []
+    | otherwise = x : rmLast xs
+
+isPalin :: String -> Bool
+isPalin s = hisPalin (formatS s)
+hisPalin :: String -> Bool
+hisPalin [] = True
+hisPalin [_] = True
+hisPalin l
+ | head l == last l = hisPalin (middle l)
+ | otherwise = False
+
+
 -- Exercise 7.26 Page 133
 
