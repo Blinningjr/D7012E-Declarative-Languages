@@ -281,9 +281,68 @@ dropLine len (w:ws)
 
 
 -- Exercise 7.20 Page 132
+joinLine :: Line -> String
+joinLine [] = ""
+joinLine (w:ws) = w ++ hjoinLine ws
+ where 
+  hjoinLine :: Line -> String
+  hjoinLine [] = ""
+  hjoinLine (w:ws) = " " ++ w ++ hjoinLine ws
+
+
 -- Exercise 7.21 Page 132
+joinLines :: [Line] -> String
+joinLines [] = ""
+joinLines (l:ls) = joinLine l ++ hjoinLines ls
+ where 
+  hjoinLines :: [Line] -> String
+  hjoinLines [] = ""
+  hjoinLines (l:ls) = "\n" ++ joinLine l ++ hjoinLines ls
+
+
 -- Exercise 7.22 Page 133
+
+
+
 -- Exercise 7.23 Page 133
+newJoinLine :: Int -> Line -> String
+newJoinLine _ [] = ""
+newJoinLine n ws = lineToString (addSpace toadd l) 
+ where
+  countLineLen :: Line -> Int
+  countLineLen [] = 0
+  countLineLen (w:ws) = length w + countLineLen ws
+
+  lineToString :: Line -> String
+  lineToString [] = ""
+  lineToString (w:ws) = w ++ lineToString ws
+
+  addSpace :: Int -> Line -> Line
+  addSpace n l
+   | n < 1 = l
+   | otherwise = addSpace toadd newl 
+    where
+     haddSpace :: Int -> Line -> Line
+     haddSpace _ [] = []
+     haddSpace n (w:ws)
+      | n < 1 = (w:ws)
+      | myElemC ' ' w = [w ++ " "] ++ haddSpace (n-1) ws
+      | otherwise = [w] ++ haddSpace n ws
+    
+     newl = haddSpace n l
+     toadd = n - (countLineLen newl - countLineLen l)
+
+  makeLine :: Line -> Line
+  makeLine [] = []
+  makeLine (w:ws) = [w] ++ hmakeLine ws 
+   where
+    hmakeLine :: Line -> Line
+    hmakeLine [] = []
+    hmakeLine (w:ws) = [" "] ++ [w] ++ hmakeLine ws 
+  
+  l = makeLine ws
+  toadd = n - countLineLen l
+
 -- Exercise 7.25 Page 133
 -- Exercise 7.26 Page 133
 
