@@ -17,16 +17,18 @@ takeFirstK k (x:xs)
  | otherwise = []
 
 -- Sorts a list of all sublists on the size 
-quicksort :: [Int] -> [Int]
+quicksort :: [(Int, (Int, Int), [Int])] -> [(Int, (Int, Int), [Int])]
 quicksort [] = []
 quicksort (x:xs) = quicksort lhs ++ [x] ++ quicksort rhs
  where
-  pivot :: Int -> [Int] -> ([Int], [Int])
+  pivot :: (Int, (Int, Int), [Int]) -> [(Int, (Int, Int), [Int])] -> ([(Int, (Int, Int), [Int])], [(Int, (Int, Int), [Int])])
   pivot _ [] = ([], []) 
   pivot p (x:xs)
-   | x < p = (x : lhs, rhs) 
+   | xSize < pSize = (x : lhs, rhs) 
    | otherwise = (lhs, x : rhs)
     where
+     (xSize, _, _) = x
+     (pSize, _, _) = p
      (lhs, rhs) = pivot p xs 
   
   (lhs, rhs) = pivot x xs
