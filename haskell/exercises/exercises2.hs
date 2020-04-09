@@ -193,3 +193,35 @@ myDrop n (x:xs)
 mySplitAt :: Int -> [a] -> ([a], [a])
 mySplitAt n xs = (myTake n xs, myDrop n xs)
 
+
+-- Exercise 7.18 Page 128
+isSubList :: [Char] -> [Char] -> Bool
+isSubList [] _ = True
+isSubList _ [] = False
+isSubList (x:xs) (y:ys)
+ | x == y = isSubList xs ys
+ | otherwise = isSubList (x:xs) ys
+
+isSubseq :: [Char] -> [Char] -> Bool
+isSubseq [] _ = True
+isSubseq _ [] = False
+isSubseq (x:xs) (y:ys)
+ | x == y = hisSubseq xs ys
+ | otherwise = isSubseq (x:xs) ys
+  where
+   hisSubseq :: [Char] -> [Char] -> Bool
+   hisSubseq [] _ = True
+   hisSubseq _ [] = False
+   hisSubseq (x:xs) (y:ys)
+    | x == y = hisSubseq xs ys
+    | otherwise = False
+
+
+-- Exercise 7.19 Page 132
+-- Exercise 7.20 Page 132
+-- Exercise 7.21 Page 132
+-- Exercise 7.22 Page 133
+-- Exercise 7.23 Page 133
+-- Exercise 7.25 Page 133
+-- Exercise 7.26 Page 133
+
