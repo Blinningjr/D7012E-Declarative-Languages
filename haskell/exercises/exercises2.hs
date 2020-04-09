@@ -304,6 +304,42 @@ joinLines (l:ls) = joinLine l ++ hjoinLines ls
 
 
 -- Exercise 7.22 Page 133
+getFirstSpace :: String -> Int
+getFirstSpace st = hgfs 0 st
+ where
+  hgfs :: Int -> String -> Int 
+  hgfs n st
+   | n >= len = len
+   | myElemC (st !! n) whitespace = n
+   | otherwise = hgfs (n+1) st
+    where
+     len = length st
+
+getWord1 :: String -> String
+getWord1 st = w
+ where
+  (w, _) = splitAt (getFirstSpace st) st
+
+dropWord1 :: String -> String
+dropWord1 st = ws
+ where
+  (_, ws) = splitAt (getFirstSpace st) st
+
+getLineSplit :: Int -> [MyWord] -> Int
+getLineSplit _ [] = 0
+getLineSplit n (w:ws)
+ | length w <= n = 1 + getLineSplit (n - (length w + 1)) ws
+ | otherwise = 0
+
+myGetLine1 :: Int -> [MyWord] -> Line
+myGetLine1 n s = l
+ where
+  (l, _) = splitAt (getLineSplit n s) s
+
+dropLine1 :: Int -> [MyWord] -> Line
+dropLine1 n s = l
+ where
+  (_, l) = splitAt (getLineSplit n s) s
 
 
 
@@ -389,7 +425,6 @@ hisPalin l
 
 
 -- Exercise 7.26 Page 133
--- isSubseq String String
 subst :: String -> String -> String -> String
 subst oldSub newSub st
  | isSubseq oldSub st = hsubst oldSub newSub st
