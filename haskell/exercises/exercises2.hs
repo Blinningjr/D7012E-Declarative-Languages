@@ -218,6 +218,68 @@ isSubseq (x:xs) (y:ys)
 
 
 -- Exercise 7.19 Page 132
+-- Taken form book
+whitespace = ['\n', '\t', ' ']
+
+myElemC :: Char -> String -> Bool
+myElemC _ [] = False
+myElemC n (x:xs)
+ | n == x = True
+ | otherwise = myElemC n xs
+
+-- Taken from book
+getWord :: String -> String
+getWord [] = []
+getWord (x:xs)
+ | myElemC x whitespace = []
+ | otherwise = x : getWord xs
+
+-- Taken from the book
+dropWord :: String -> String
+dropWord [] = []
+dropWord (x:xs)
+ | myElemC x whitespace = (x:xs)
+ | otherwise = dropWord xs 
+
+--Taken from the book
+dropSpace :: String -> String
+dropSpace [] = []
+dropSpace (x:xs)
+ | myElemC x whitespace = dropSpace xs
+ | otherwise = (x:xs)
+
+-- Taken from the book
+type MyWord = String
+
+-- Taken from the book
+splitWords :: String -> [MyWord]
+splitWords [] = []
+splitWords ws
+ = (getWord st) : splitWords (dropWord st)
+  where 
+   st = dropSpace ws
+
+-- Taken from the book
+type Line = [MyWord]
+
+-- Taken form the book
+myGetLine :: Int -> [MyWord] -> Line
+myGetLine _ [] = []
+myGetLine len (w:ws)
+ | length w <= len = w : myGetLine newlen ws
+ | otherwise = []
+  where
+   newlen = len - (length w + 1)
+
+dropLine :: Int -> [MyWord] -> Line
+dropLine _ [] = []
+dropLine len (w:ws)
+ | length w <= len = dropLine newlen ws
+ | otherwise = (w:ws)
+  where
+   newlen = len - (length w + 1)
+
+
 -- Exercise 7.20 Page 132
 -- Exercise 7.21 Page 132
 -- Exercise 7.22 Page 133
