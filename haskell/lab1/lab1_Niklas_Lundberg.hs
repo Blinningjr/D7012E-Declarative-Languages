@@ -89,10 +89,9 @@ strLine n (size, (i, j), subList) = sizeS ++ pad ++ iS ++ pad ++ jS ++ pad ++ su
   subListS = myShowList subList
 
 -- Creates the result string for the k smallest sublist data
-strLines :: [(Int, (Int, Int), [Int])] -> String
-strLines xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") ++ pad ++ (padLeft padSize "j") ++ pad ++ "sublist\n" ++ hstrLines xs
+strLines :: Int -> [(Int, (Int, Int), [Int])] -> String
+strLines padSize xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") ++ pad ++ (padLeft padSize "j") ++ pad ++ "sublist\n" ++ hstrLines xs
  where
-  padSize = 4
   pad = "  "
 
   hstrLines :: [(Int, (Int, Int), [Int])] -> String
@@ -104,12 +103,14 @@ strLines xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") ++ pad ++
 
 ---------------------------------------------------------------------------------------------------
 -- Final functions which computes the k smallest set and turns it into a String -------------------
----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------- 
 
 smallestKset :: [Int] -> Int -> IO ()
-smallestKset xs k = putStr (result)
+smallestKset xs k = putStr (input ++ result)
  where
-  result = strLines (takeFirstK k (quicksort (allSubArr xs)))
+  padSize = 4
+  input = "\n" ++ "Entire list: " ++ myShowList xs ++ "\n\n"
+  result = strLines padSize (takeFirstK k (quicksort (allSubArr xs)))
 
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
