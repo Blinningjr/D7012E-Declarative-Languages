@@ -6,7 +6,7 @@ rmLast (x:xs)
 
 -- Sums all elements in a list
 sumArr :: [Int] -> Int
-sumArr [] = 0
+sumArr [x]= x
 sumArr (x:xs) = x + sumArr xs
 
 -- Takes the first k elements from a list
@@ -31,13 +31,10 @@ quicksort (x:xs) = quicksort lhs ++ [x] ++ quicksort rhs
      (pSize, _, _) = p
      (lhs, rhs) = pivot p xs 
   
-  (lhs, rhs) = pivot x xs
-
-  
+  (lhs, rhs) = pivot x xs 
 
 -- Calculates all possible sublists in form [(Size, (i, j), [SubList])]
 allSubArr :: [Int] -> [(Int, (Int, Int), [Int])]
-allSubArr [] = []
 allSubArr xs = hallSubI (1, length xs) xs
  where 
   hallSubJ :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
@@ -45,6 +42,42 @@ allSubArr xs = hallSubI (1, length xs) xs
   hallSubJ (i, j) xs = (sumArr xs, (i, j), xs) : hallSubJ (i, j-1) (rmLast xs)
   
   hallSubI :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
-  hallSubI _ [] = []
+  hallSubI (i, j) [x] = [(x, (i, j), [x])]
   hallSubI (i, j) (x:xs) = hallSubJ (i, j) (x:xs) ++ hallSubI (i+1, j) xs
+
+-- Pad with space in front of string to make it length n
+padLeft :: Int -> String -> String
+padLeft n st
+ | length st >= n = st
+ | otherwise = padLeft n (' ' : st)
+
+-- Turn list of Int:s into a string
+myShowList :: [Int] -> String
+myShowList [] = "[]"
+myShowList (x:xs) = "[" ++ (show x) ++ hmyShowList xs
+ where
+  hmyShowList :: [Int] -> String
+  hmyShowList [] = "]"
+  hmyShowList (x:xs) = "," ++ (show x) ++ hmyShowList xs
+
+-- Creates a line string of the sublist data 
+strLine :: Int -> (Int, (Int, Int), [Int]) -> String
+strLine n (size, (i, j), subList) = sizeS ++ pad ++ iS ++ pad ++ jS ++ pad ++ subListS
+ where
+  pad = "  "
+  sizeS = padLeft n (show size)
+  iS = padLeft n (show i)
+  jS = padLeft n (show j)
+  subListS = myShowList subList
+
+-- Creates the result string for the k smallest sublist data
+strLines :: [(Int, (Int, Int), [Int])] -> String
+strLines xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") ++ pad ++ (padLeft padSize "j") ++ pad ++ "sublist\n" ++ hstrLines xs
+ where
+  padSize = 4
+  pad = "  "
+
+  hstrLines :: [(Int, (Int, Int), [Int])] -> String
+  hstrLines [] = ""
+  hstrLines (x:xs) = strLine padSize x ++ "\n" ++ hstrLines xs 
 
