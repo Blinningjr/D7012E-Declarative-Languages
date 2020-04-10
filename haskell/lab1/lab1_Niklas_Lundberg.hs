@@ -1,3 +1,7 @@
+---------------------------------------------------------------------------------------------------
+-- Functions for calculating all the sublists of a list -------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- Removes the last element in a list
 rmLast :: [Int] -> [Int]
 rmLast (x:xs)
@@ -9,12 +13,24 @@ sumArr :: [Int] -> Int
 sumArr [x]= x
 sumArr (x:xs) = x + sumArr xs
 
--- Takes the first k elements from a list
-takeFirstK :: Int -> [a] -> [a]
-takeFirstK _ [] = []
-takeFirstK k (x:xs)
- | k > 0 = x : takeFirstK (k-1) xs
- | otherwise = []
+-- Calculates all possible sublists in form [(Size, (i, j), [SubList])]
+allSubArr :: [Int] -> [(Int, (Int, Int), [Int])]
+allSubArr xs = hallSubI (1, length xs) xs
+ where 
+  hallSubJ :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
+  hallSubJ _ [] = []
+  hallSubJ (i, j) xs = (sumArr xs, (i, j), xs) : hallSubJ (i, j-1) (rmLast xs)
+  
+  hallSubI :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
+  hallSubI (i, j) [x] = [(x, (i, j), [x])]
+  hallSubI (i, j) (x:xs) = hallSubJ (i, j) (x:xs) ++ hallSubI (i+1, j) xs
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------
+-- Functions for getting the k smallest set of all the sublists -----------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Sorts a list of all sublists on the size 
 quicksort :: [(Int, (Int, Int), [Int])] -> [(Int, (Int, Int), [Int])]
@@ -33,17 +49,19 @@ quicksort (x:xs) = quicksort lhs ++ [x] ++ quicksort rhs
   
   (lhs, rhs) = pivot x xs 
 
--- Calculates all possible sublists in form [(Size, (i, j), [SubList])]
-allSubArr :: [Int] -> [(Int, (Int, Int), [Int])]
-allSubArr xs = hallSubI (1, length xs) xs
- where 
-  hallSubJ :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
-  hallSubJ _ [] = []
-  hallSubJ (i, j) xs = (sumArr xs, (i, j), xs) : hallSubJ (i, j-1) (rmLast xs)
-  
-  hallSubI :: (Int, Int) -> [Int] -> [(Int, (Int, Int), [Int])]
-  hallSubI (i, j) [x] = [(x, (i, j), [x])]
-  hallSubI (i, j) (x:xs) = hallSubJ (i, j) (x:xs) ++ hallSubI (i+1, j) xs
+-- Takes the first k elements from a list
+takeFirstK :: Int -> [a] -> [a]
+takeFirstK _ [] = []
+takeFirstK k (x:xs)
+ | k > 0 = x : takeFirstK (k-1) xs
+ | otherwise = []
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------
+-- Functions for printing the reslut --------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Pad with space in front of string to make it length n
 padLeft :: Int -> String -> String
@@ -80,4 +98,19 @@ strLines xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") ++ pad ++
   hstrLines :: [(Int, (Int, Int), [Int])] -> String
   hstrLines [] = ""
   hstrLines (x:xs) = strLine padSize x ++ "\n" ++ hstrLines xs 
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------
+-- Final functions which computes the k smallest set and turns it into a String -------------------
+---------------------------------------------------------------------------------------------------
+
+smallestKset :: [Int] -> Int -> IO ()
+smallestKset xs k = putStr (result)
+ where
+  result = strLines (takeFirstK k (quicksort (allSubArr xs)))
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
