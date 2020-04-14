@@ -1,4 +1,4 @@
-Niklas Lundberg
+-- Niklas Lundberg
 
 ---------------------------------------------------------------------------------------------------
 -- Functions for calculating all the sublists of a list -------------------------------------------
