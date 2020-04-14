@@ -40,7 +40,7 @@ quicksort (x:xs) = quicksort lhs ++ [x] ++ quicksort rhs
   pivot :: (Int, (Int, Int), [Int]) -> [(Int, (Int, Int), [Int])] -> ([(Int, (Int, Int), [Int])], [(Int, (Int, Int), [Int])])
   pivot _ [] = ([], []) 
   pivot p (x:xs)
-   | xSize < pSize = (x : lhs, rhs) 
+   | xSize <= pSize = (x : lhs, rhs) 
    | otherwise = (lhs, x : rhs)
     where
      (xSize, _, _) = x
@@ -106,6 +106,7 @@ strLines padSize xs = (padLeft padSize "size") ++ pad ++ (padLeft padSize "i") +
 --------------------------------------------------------------------------------------------------- 
 
 smallestKset :: [Int] -> Int -> IO ()
+smallestKset [] _ = error "smallestKset requiers nonempty list."
 smallestKset xs k = putStr (input ++ result)
  where
   padSize = 4

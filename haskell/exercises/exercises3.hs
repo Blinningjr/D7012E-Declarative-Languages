@@ -42,8 +42,27 @@ greaterThenZero2 ns = foldr (&&) True nns
 
 
 -- Exercise 9.7 Page 160
+minFOfN :: (Int -> Int) -> Int -> Int
+minFOfN f n
+ | n < 1 = f n
+ | f n <= prev = f n
+ | otherwise = prev
+  where
+   prev = minFOfN f (n-1)
 
+allEq :: [Int] -> Bool
+allEq [] = True
+allEq (x:xs) = hallEq xs x
+ where
+  hallEq :: [Int] -> Int -> Bool
+  hallEq [] _ = True
+  hallEq (x:xs) n = x == n && hallEq xs n
+  
+fEqual :: (Int -> Int) -> Int -> Bool
+fEqual f n = allEq (map f [0..n]) 
 
+fGreater :: (Int -> Int) -> Int -> Bool
+fGreater f n = 
 
 -- Exercise 9.9 Page 160-161
 -- Exercise 9.10 Page 161
