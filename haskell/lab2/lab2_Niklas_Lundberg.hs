@@ -103,7 +103,7 @@ diff v (Op "*" e1 e2) =
 diff v (Op "/" e1 e2) =
   simplify (Op "/" (Op "-" (Op "*" (diff v e1) e1) (Op "*" e1 (diff v e2))) (Op "*" e2 e2))
 diff v (App "sin" e) = simplify (Op "*" (diff v e) (App "cos" e)) -- My Code.
-diff v (App "cos" e) = simplify (Op "*" (diff v e) (App "sin" e)) -- My Code.
+diff v (App "cos" e) = simplify (Op "-" (Const 0) (Op "*" (diff v e) (App "sin" e))) -- My Code.
 diff v (App "log" e) = simplify (Op "/" (Const 1) (diff v e)) -- My Code.
 diff v (App "exp" e) = simplify (Op "*" (App "exp" e) (diff v e)) -- My Code.
 diff _ _ = error "can not compute the derivative"
@@ -138,7 +138,7 @@ mkfun _ = error "The secound argument in the tuple must be a var EXPR." -- My Co
 -- Finds a value for x that resuts in f(x)=0, using Newton-Raphson method.
 -- var -> body -> start value -> Result
 findzero :: String -> String -> Float -> Float
-findzero s1 s2 x0 = until (\ x -> abs (f x) <= 0.0001) (\ x -> x - (f x)/(df x)) x0 -- My Code.
+findzero s1 s2 x0 = until (\ x -> abs (f x) <= 0.0001) (\ x -> x - ((f x)/(df x))) x0 -- My Code.
   where
     e1 = parse s1 -- My Code.
     e2 = parse s2 -- My Code.
