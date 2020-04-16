@@ -128,3 +128,20 @@ simplify (Op oper left right) =
       (op,le,re)      -> Op op le re
 simplify (App id e) = App id (simplify e) -- My Code.
 
+
+-- Makes a function from a body and a var EXPR.
+mkfun :: (EXPR, EXPR) -> (Float -> Float)
+mkfun (body, (Var v)) = (\ x -> eval body [(v,x)]) -- My Code.
+mkfun _ = error "The secound argument in the tuple must be a var EXPR." -- My Code.
+
+
+-- Finds a value for x that resuts in f(x)=0, using Newton-Raphson method.
+-- var -> body -> start value -> Result
+findzero :: String -> String -> Float -> Float
+findzero s1 s2 x0 = until (\ x -> abs (f x) <= 0.0001) (\ x -> x - (f x)/(df x)) x0 -- My Code.
+  where
+    e1 = parse s1 -- My Code.
+    e2 = parse s2 -- My Code.
+    f = mkfun (e2, e1) -- My Code.
+    df = mkfun (diff e1 e2, e1) -- My Code.
+
