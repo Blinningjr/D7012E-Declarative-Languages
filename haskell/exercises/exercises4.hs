@@ -1,0 +1,18 @@
+-- Exercise 12.2 Page 214
+-- Exercise 12.3 Page 214
+-- Exercise 12.4 Page 219
+-- Exercise 12.5 Page 219
+-- Exercise 12.6 Page 219
+-- Exercise 12.8 Page 219
+-- Exercise 12.10 Page 225
+-- Exercise 13.1 Page 230
+-- Exercise 13.2 Page 237
+-- Exercise 13.3 Page 237
+-- Exercise 13.4 Page 237
+-- Exercise 13.5 Page 237
+-- Exercise 13.6 Page 237-238
+-- Exercise 13.7 Page 238
+-- Exercise 13.8 Page 238
+-- Exercise 13.10 Page 240
+-- Exercise 13.12 Page 240
+
