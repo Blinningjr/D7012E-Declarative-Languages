@@ -73,6 +73,7 @@ unparse :: EXPR -> String
 unparse (Const n) = show n
 unparse (Var s) = s
 unparse (Op oper e1 e2) = "(" ++ unparse e1 ++ oper ++ unparse e2 ++ ")"
+unparse (App st e) = st ++ "(" ++ unparse e ++ ")" -- My Code.
 
 
 -- Evaluates an EXPR into a Float using an Enviorment that defines the variables.
