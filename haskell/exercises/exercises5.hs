@@ -208,29 +208,40 @@ elemT n (NodeT v lt rt)
  | otherwise = elemT n lt || elemT n rt
 
 
--- Exercise 14.29 Page 
+-- Exercise 14.29 Page 260
 twist :: Either a b -> Either b a
 twist (Left l) = Right l
 twist (Right r) = Left r 
 
 
 -- Exercise 14.33 Page 260
-data GTree a = Leaf a | Gnode [GTree a]
+data GTree a = Leaf a | Gnode [GTree a] deriving Show
 
 countGT :: GTree a -> Int
 countGT (Leaf _) = 1
 countGT (Gnode xs) = foldr (\ x y -> y + countGT x) 0 xs
 
 depthGT :: GTree a -> Int
-depthGT (Leaf _) = 1
-depthGT (Gnode xs) = foldr (\ x y -> max (countGT x) y) 0 xs
+depthGT (Leaf _) = 0
+depthGT (Gnode xs) = 1 + foldr (\ x y -> (max (countGT x) y)) 0 xs
 
 sumGT :: Num a => GTree a -> a
 sumGT (Leaf v) = v
 sumGT (Gnode xs) = foldr (\ x y -> y + sumGT x) 0 xs
 
 elemGT :: Eq a => a -> GTree a -> Bool
+elemGT n (Leaf v) = n == v
+elemGT n (Gnode xs) = foldr (\ x y -> y || elemGT n x) False xs
+
+mapGT :: (a -> b) -> GTree a -> GTree b
+mapGT f (Leaf v) = Leaf (f v)
+mapGT f (Gnode xs) = Gnode (map (mapGT f) xs)
+
+flattenGT :: GTree a -> [a]
+flattenGT (Leaf v) = [v]
+flattenGT (Gnode xs) = foldr (++) [] (map flattenGT xs)
 
 
 -- Exercise 14.34 Page 260
+-- Empty tree is represented by:  Gnode []
 
