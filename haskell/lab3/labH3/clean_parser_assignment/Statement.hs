@@ -12,7 +12,8 @@ data Statement =
     Body [Statement] | -- My code.
     While Expr.T Statement | -- My code.
     Read String | -- My code.
-    Write Expr.T -- My code.
+    Write Expr.T | -- My code.
+    Repeat Statement Expr.T -- My code.
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> buildAss
@@ -35,10 +36,14 @@ parseWhile = accept "while" -# (Expr.parse # (require "do" -# parse)) >-> buildW
 buildWhile (e, s) = While e s -- My code.
 
 parseRead = accept "read" -# word #- require ";" >-> buildRead -- My code.
-buildRead v = Read v
+buildRead v = Read v -- My code.
 
 parseWrite = accept "write" -# Expr.parse #- require ";" >-> buildWrite -- My code.
-buildWrite e = Write e
+buildWrite e = Write e -- My code.
+
+parseRepeat = accept "repeat" -# parse # (require "until" -# Expr.parse) #-
+ require ";"  >-> buildRepeat -- My code.
+buildRepeat (s, e) = Repeat s e -- My code.
 
 exec :: [T] -> Dictionary.T String Integer -> [Integer] -> [Integer]
 exec [] _ input = input -- My code.
@@ -55,18 +60,21 @@ exec (While e stmt: stmts) dict input -- My code.
  | otherwise = exec stmts dict input
 exec (Read cs: stmts) dict (x:xs) = exec stmts (Dictionary.insert (cs, x) dict) xs -- My code. 
 exec (Write e: stmts) dict input = exec stmts dict ((Expr.value e dict):input) -- My code.
-
+exec (Repeat stnt e: stnts) dict input = if (Expr.value e dict) > 0
+ then exec (stnt:stnts) dict input
+ else exec (stnt:(Repeat stnt e):stnts) dict input -- My code.
 
 instance Parse Statement where
-  parse = parseWhile ! parseIf ! parseBody ! parseRead ! parseWrite !
+  parse = parseWhile ! parseRepeat ! parseIf ! parseBody ! parseRead ! parseWrite !
            parseSkip ! assignment -- My code.
  
-  toString (Assignment ident val) = ident ++ " := " ++ Expr.toString val ++ "\n"
+  toString (Assignment ident val) = ident ++ " := " ++ Expr.toString val ++ ";\n" -- My code.
   toString (If cond lhs rhs) = "if " ++ Expr.toString cond ++ " then\n" ++
-   toString lhs ++ "else\n" ++ toString rhs
-  toString (Skip) = "skip;\n"
-  toString (Body stnts) = "begin\n" ++ foldr (++) "" (map toString stnts) ++ "end\n"
-  toString (While cond stnt) = "while " ++ Expr.toString cond ++ " do\n" ++ toString stnt
-  toString (Read cs) = "read " ++ cs ++ ";\n"
-  toString (Write e) = "write " ++ Expr.toString e ++ ";\n"
+   toString lhs ++ "else\n" ++ toString rhs -- My code.
+  toString (Skip) = "skip;\n" -- My code.
+  toString (Body stnts) = "begin\n" ++ foldr (++) "" (map toString stnts) ++ "end\n" -- My code.
+  toString (While cond stnt) = "while " ++ Expr.toString cond ++ " do\n" ++ toString stnt -- My code.
+  toString (Read cs) = "read " ++ cs ++ ";\n" -- My code.
+  toString (Write e) = "write " ++ Expr.toString e ++ ";\n" -- My code.
+  toString (Repeat stnt e) = "repeat\n" ++ toString stnt ++ "until " ++ Expr.toString e ++ ";\n" 
 

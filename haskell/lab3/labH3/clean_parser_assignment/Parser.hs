@@ -36,7 +36,7 @@ word :: Parser String
 word = token (letter # iter letter >-> cons)
 
 chars :: Int -> Parser String
-chars n = ((char # chars (n-1)) >-> cons ! return []) ? (\ wc -> length wc <= n) -- My code.
+chars n = ((char # chars (n-1)) >-> cons ! return []) ? (\ wc -> length wc == n) -- My code.
 
 accept :: String -> Parser String
 accept w = (token (chars (length w))) ? (==w)

@@ -7,7 +7,7 @@ import Prelude hiding (return, fail)
 newtype T = Program [Statement.T] -- My code.
 instance Parse T where
   parse = iter Statement.parse >-> Program -- My code.
-  toString (Program stnts) = foldr (++) "" (map Statement.toString stnts)
+  toString (Program stnts) = foldr (++) "" (map Statement.toString stnts) -- My code.
 
 exec (Program stmts) input = Statement.exec stmts Dictionary.empty input -- My code.
 
