@@ -55,3 +55,17 @@ rp1 = Program.exec p1 [1024, 2]
 
 rp2 = Program.exec p2 [5]
 
+pr :: Program.T
+pr = fromString ("\
+\read k;\
+\write k;\
+\repeat\
+\ begin\
+\ k := k + 1;\
+\ write k;\
+\ end\
+\until k;")
+
+spr = putStr (toString pr)
+rpr k = Program.exec pr [k]
+

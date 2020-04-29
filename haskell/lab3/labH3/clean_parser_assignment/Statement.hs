@@ -59,10 +59,9 @@ exec (While e stmt: stmts) dict input -- My code.
  | Expr.value e dict > 0 = exec (stmt:(While e stmt):stmts) dict input
  | otherwise = exec stmts dict input
 exec (Read cs: stmts) dict (x:xs) = exec stmts (Dictionary.insert (cs, x) dict) xs -- My code. 
-exec (Write e: stmts) dict input = exec stmts dict ((Expr.value e dict):input) -- My code.
-exec (Repeat stnt e: stnts) dict input = if (Expr.value e dict) > 0
- then exec (stnt:stnts) dict input
- else exec (stnt:(Repeat stnt e):stnts) dict input -- My code.
+exec (Write e: stmts) dict input = exec stmts dict (input ++ [Expr.value e dict]) -- My code.
+exec (Repeat stnt e: stnts) dict input = exec (stnt:(If e (Skip) (Repeat stnt e)):stnts) dict input -- My code.
+
 
 instance Parse Statement where
   parse = parseWhile ! parseRepeat ! parseIf ! parseBody ! parseRead ! parseWrite !
