@@ -1,7 +1,7 @@
 % Niklas Lundberg
 % state(Robot position, Brass key, Steel key, Package, number of item held)
 
-% Pickup Package Key.
+% Pickup Package.
 move(state(Pos, BK, SK, Pos, NI1),
 	pickup(package),
 	state(Pos, BK, SK, has, NI2)) :- NI1 < 2, NI2 is NI1 + 1.
@@ -11,7 +11,7 @@ move(state(r3, has, SK, Pa, NI),
 	walk(r3, r1),
 	state(r1, has, SK, Pa, NI)).
 
-% Drop Package Key. 
+% Drop Package. 
 move(state(Pos, BK, SK, has, NI1),
 	drop(package),
 	state(Pos, BK, SK, Pos, NI2)) :- NI2 is NI1 - 1.
@@ -52,7 +52,7 @@ move(state(Pos, BK, has, Pa, NI1),
 	state(Pos, BK, Pos, Pa, NI2)) :- NI2 is NI1 - 1.
 
 
-solvR(state(_,_,_,r1,_), _, []).
+solvR(state(r2,_,_,has,_), _, []).
 solvR(State1, N1, [Action|Actions]) :- N1 > 0,
 	move(State1, Action, State2),
 	N2 is N1 - 1,
