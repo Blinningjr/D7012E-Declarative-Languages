@@ -127,14 +127,12 @@ score([X|XS], SP1, SP2) :-
 winner(State, 1) :-
 	terminal(State), 
 	score(State, SP1, SP2),
-	!,
 	SP1 < SP2,
 	!.
 
 winner(State, 2) :-
 	terminal(State), 
 	score(State, SP1, SP2),
-	!,
 	SP1 > SP2,
 	!.
 
@@ -167,10 +165,9 @@ tie(State) :-
 terminal(State) :- 
 	moves(1, State, MvP1),
 	moves(2, State, MvP2),
-	length(MvP1, Len1),
-	length(MvP2, Len2),
 	!,
-	0 =:= Len1 + Len2,
+	MvP1 == ['n'],
+	MvP2 == ['n'],
 	!.
 
 
@@ -240,9 +237,13 @@ validMoves(Plyr, State, [X, Y], MvList) :-
 	validMoves(Plyr, State, [X, Y1], MvList),
 	!.
 
+noMoves([], ['n']).
+noMoves(MvList, MvList).
 
 moves(Plyr, State, MvList) :-
-	validMoves(Plyr, State, [0, 0], MvList),
+	validMoves(Plyr, State, [0, 0], MvL),
+	!,
+	noMoves(MvL, MvList),
 	!.
 
 
@@ -365,7 +366,7 @@ validmove(Plyr, State, Pos) :-
 validmove(Plyr, State, 'n') :-
 	moves(Plyr, State, MV),
 	!,
-	MV = [].
+	MV == ['n'].
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.

@@ -183,7 +183,6 @@ tieFourEmptyOnly1canMove([[.,2,2,2,2,.],
 			  [.,2,2,2,2,.]]).
 
 
-	%Fail if start as p2.
 % only player 1 can make a move, and then it's a 3-3 tie
 tie30emptyOnly1canMove([[.,.,.,.,.,.],
 			[.,.,.,.,.,.],
@@ -236,7 +235,6 @@ onlyOnes([[1,1,1,1,1,1],
 %%
 
 
-% Fail plyr 2 chose move: null.
 % player 2 has no move, but 1 has two; then 1 wins
 forcing2toDoNullMove([[.,.,.,.,.,.],
 		      [.,.,.,.,.,2],
