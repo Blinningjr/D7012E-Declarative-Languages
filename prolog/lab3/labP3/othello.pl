@@ -11,7 +11,8 @@
 
 
 %do not chagne the follwoing line!
-:- ensure_loaded('play.pl').
+%:- ensure_loaded('play.pl').
+:- ensure_loaded('stupid.pl').
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -30,15 +31,15 @@
 %       done for game tic-tac-toe.
 %
 %          * initialize(InitialState,InitialPlyr). 		Done
-%          * winner(State,Plyr) 
-%          * tie(State)
-%          * terminal(State)					Done 
-%          * moves(Plyr,State,MvList)
-%          * nextState(Plyr,Move,State,NewState,NextPlyr)
-%          * validmove(Plyr,State,Proposed)
-%          * h(State,Val)  (see question 2 in the handout)
-%          * lowerBound(B)
-%          * upperBound(B)
+%          * winner(State,Plyr)                                 DOne
+%          * tie(State)                                         Done
+%          * terminal(State)					Done
+%          * moves(Plyr,State,MvList)				Done
+%          * nextState(Plyr,Move,State,NewState,NextPlyr)       Done
+%          * validmove(Plyr,State,Proposed)                     Done
+%          * h(State,Val)  (see question 2 in the handout)	
+%          * lowerBound(B)					Done
+%          * upperBound(B)					Done
 % /* ------------------------------------------------------ */
 
 
@@ -85,6 +86,7 @@ initBoard([ [.,.,.,.,.,.],
 %   - returns an initial game state and Initial player 
 %     (for the initial game state  you can use initBoard(B))
 
+
 initialize(InitialState, 1) :- initBoard(InitialState).
 
 
@@ -97,24 +99,44 @@ initialize(InitialState, 1) :- initBoard(InitialState).
 %     Plyr has a higher score than the other player 
 
 
-score([], 0, 0).
-score([.|XS], SP1, SP2) :- score(XS, SP1, SP2).
-score([1|XS], NSP1, SP2) :- score(XS, SP1, SP2),
-	NSP1 is SP1 + 1.
-score([2|XS], SP1, NSP2) :- score(XS, SP1, SP2),
-	NSP2 is SP2 + 1.
-score([X|XS], SP1, SP2) :- score(X, SP1X, SP2X),
+score([], 0, 0) :-
+	!.
+
+score([.|XS], SP1, SP2) :-
+	score(XS, SP1, SP2),
+	!.
+
+score([1|XS], NSP1, SP2) :-
+	score(XS, SP1, SP2),
+	NSP1 is SP1 + 1,
+	!.
+
+score([2|XS], SP1, NSP2) :-
+	score(XS, SP1, SP2),
+	NSP2 is SP2 + 1,
+	!.
+
+score([X|XS], SP1, SP2) :-
+	score(X, SP1X, SP2X),
 	score(XS, SP1XS, SP2XS),
 	SP1 is SP1X + SP1XS,
-	SP2 is SP2X + SP2XS.
+	SP2 is SP2X + SP2XS,
+	!.
 
-winner(State, 1) :- terminal(State), 
-	score(State, SP1, SP2),
-	SP1 < SP2.
-winner(State, 2) :- terminal(State), 
-	score(State, SP1, SP2),
-	SP1 > SP2.
 
+winner(State, 1) :-
+	terminal(State), 
+	score(State, SP1, SP2),
+	!,
+	SP1 < SP2,
+	!.
+
+winner(State, 2) :-
+	terminal(State), 
+	score(State, SP1, SP2),
+	!,
+	SP1 > SP2,
+	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -125,9 +147,13 @@ winner(State, 2) :- terminal(State),
 %    - true if terminal State is a "tie" (no winner) 
 
 
-tie(State) :- terminal(State),
+tie(State) :-
+	terminal(State),
+	!,
 	score(State, SP1, SP2),
-	SP1 =:= SP2.
+	!,
+	SP1 =:= SP2,
+	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -137,11 +163,16 @@ tie(State) :- terminal(State),
 %% define terminal(State). 
 %   - true if State is a terminal   
 
-terminal([]).
-terminal([.|_]) :- fail.
-terminal([1|XS]) :- terminal(XS).  
-terminal([2|XS]) :- terminal(XS).  
-terminal([X|XS]) :- terminal(X), terminal(XS).  
+
+terminal(State) :- 
+	moves(1, State, MvP1),
+	moves(2, State, MvP2),
+	length(MvP1, Len1),
+	length(MvP2, Len2),
+	!,
+	0 =:= Len1 + Len2,
+	!.
+
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
 %
@@ -178,23 +209,41 @@ printList([H | L]) :-
 %
 
 
-validMoves(Plyr, State, [5, 5], MvList) :- validmove(Plyr, State, [5, 5]),
+validMoves(Plyr, State, [5, 5], MvList) :- 
+	validmove(Plyr, State, [5, 5]),
+	!,
 	MvList = [[5, 5]];
-	MvList = [].
-validMoves(Plyr, State, [X, 5], MvList) :- validmove(Plyr, State, [X, 5]),
+	MvList = [],
+	!.
+
+validMoves(Plyr, State, [X, 5], MvList) :- 
+	validmove(Plyr, State, [X, 5]),
+	!,
 	X1 is X + 1,
 	validMoves(Plyr, State, [X1, 0], Rest),
-	MvList = [[X, 5]|Rest];
+	MvList = [[X, 5]|Rest],
+	!;
+
 	X1 is X + 1,
-	validMoves(Plyr, State, [X1, 0], MvList).
-validMoves(Plyr, State, [X, Y], MvList) :- validmove(Plyr, State, [X, Y]),
+	validMoves(Plyr, State, [X1, 0], MvList),
+	!.
+
+validMoves(Plyr, State, [X, Y], MvList) :-
+	validmove(Plyr, State, [X, Y]),
+	!,
 	Y1 is Y + 1,
 	validMoves(Plyr, State, [X, Y1], Rest),
-	MvList = [[X, Y]|Rest];
+	MvList = [[X, Y]|Rest],
+	!;
+	
 	Y1 is Y + 1,
-	validMoves(Plyr, State, [X, Y1], MvList).
+	validMoves(Plyr, State, [X, Y1], MvList),
+	!.
 
-moves(Plyr, State, MvList) :- validMoves(Plyr, State, [0, 0], MvList), !.
+
+moves(Plyr, State, MvList) :-
+	validMoves(Plyr, State, [0, 0], MvList),
+	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -206,37 +255,62 @@ moves(Plyr, State, MvList) :- validMoves(Plyr, State, [0, 0], MvList), !.
 %     state) and NextPlayer (i.e. the next player who will move).
 %
 
+
 otherPlyr(1, 2).
 otherPlyr(2, 1).
 
 
-flipDir(Plyr, _,  State, Pos, _, State) :- get(State, Pos, Plyr), !.
+flipDir(Plyr, _,  State, Pos, _, State) :-
+	get(State, Pos, Plyr),
+	!.
+
 flipDir(Plyr, OState, State, [X, Y], [DX, DY], NewState) :- 
 	otherPlyr(Plyr, OPlyr),
 	get(State, [X, Y], OPlyr),
+	!,
 	set(State, State1, [X, Y], Plyr), 
 	!,
 	X1 is X + DX,
 	Y1 is Y + DY,
-	flipDir(Plyr, OState, State1, [X1, Y1], [DX, DY], NewState), !.
+	flipDir(Plyr, OState, State1, [X1, Y1], [DX, DY], NewState),
+	!.
+
 flipDir(_, OState, _, _, _, OState).
+
 
 flip(Plyr, State1, [X, Y], State9) :- 
 	XP is X + 1, XM is X - 1,
 	YP is Y + 1, YM is Y - 1,
 	flipDir(Plyr, State1, State1, [XP, Y], [1, 0], State2),
+	!,
 	flipDir(Plyr, State2, State2, [XM, Y], [-1, 0], State3),
+	!,
 	flipDir(Plyr, State3, State3, [X, YP], [0, 1], State4),
+	!,
 	flipDir(Plyr, State4, State4, [X, YM], [0, -1], State5),
+	!,
 	flipDir(Plyr, State5, State5, [XP, YP], [1, 1], State6),
+	!,
 	flipDir(Plyr, State6, State6, [XP, YM], [1, -1], State7),
+	!,
 	flipDir(Plyr, State7, State7, [XM, YM], [-1, -1], State8),
+	!,
 	flipDir(Plyr, State8, State8, [XM, YP], [-1, 1], State9),
 	!.
 
-nextState(Plyr, Move, State1, State3, NextPlyr) :- otherPlyr(Plyr, NextPlyr),
+
+nextState(Plyr, 'n', State, State, NextPlyr) :-
+	validmove(Plyr, State, 'n'),
+	!,
+	otherPlyr(Plyr, NextPlyr),
+	!.
+
+nextState(Plyr, Move, State1, State3, NextPlyr) :-
+	otherPlyr(Plyr, NextPlyr),
 	set(State1, State2, Move, Plyr),
-	flip(Plyr, State2, Move, State3).
+	!,
+	flip(Plyr, State2, Move, State3),
+	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -247,16 +321,49 @@ nextState(Plyr, Move, State1, State3, NextPlyr) :- otherPlyr(Plyr, NextPlyr),
 %   - true if Proposed move by Plyr is valid at State.
   
 
-isBeside(State, [X, Y], Plyr) :- X1 is X + 1,get(State, [X1, Y], Plyr);
-	X2 is X - 1,get(State, [X2, Y], Plyr);
-	Y1 is Y + 1,get(State, [X, Y1], Plyr);
-	Y2 is Y - 1,get(State, [X, Y2], Plyr).
+checkDir(Plyr, State, Pos, _) :-
+	get(State, Pos, Plyr),
+	!.
 
-validmove(1, State, [X, Y]) :- get(State, [X, Y], '.'),
-	isBeside(State, [X, Y], 2).
-validmove(2, State, [X, Y]) :- get(State, [X, Y], '.'),
-	isBeside(State, [X, Y], 1).
-validmove(Plyr, State, n) :- moves(Plyr, State, MV),
+checkDir(Plyr, State, [X, Y], [DX, DY]) :-
+	otherPlyr(Plyr, OPlyr),
+	get(State, [X, Y], OPlyr),
+	!,
+	X1 is X + DX,
+	Y1 is Y + DY,
+	checkDir(Plyr, State, [X1, Y1], [DX, DY]),
+	!.
+
+
+checkFirst(Plyr, State, [X, Y], [DX, DY]) :-
+	otherPlyr(Plyr, OPlyr),
+	get(State, [X, Y], OPlyr),
+	!,
+	X1 is X + DX,
+	Y1 is Y + DY,
+	checkDir(Plyr, State, [X1, Y1], [DX, DY]),
+	!.
+
+
+dirs([X, Y], [XP, Y], [1, 0]) :- XP is X + 1.			% Right
+dirs([X, Y], [XM, Y], [-1, 0]) :- XM is X - 1.			% Left
+dirs([X, Y], [X, YP], [0, 1]) :- YP is Y + 1.			% Up
+dirs([X, Y], [X, YM], [0, -1]) :- YM is Y - 1.			% Down
+dirs([X, Y], [XP, YP], [1, 1]) :- XP is X + 1, YP is Y + 1.	% Right UP
+dirs([X, Y], [XP, YM], [1, -1]) :- XP is X + 1, YM is Y - 1.	% Right Down
+dirs([X, Y], [XM, YM], [-1, -1]) :- XM is X - 1, YM is Y - 1.	% Left Down
+dirs([X, Y], [XM, YP], [-1, 1]) :- XM is X - 1, YP is Y + 1.	% Left Up
+
+
+validmove(Plyr, State, Pos) :- 
+	get(State, Pos, '.'),
+	!,
+	dirs(Pos, NextPos, DeltaPos),
+	checkFirst(Plyr, State, NextPos, DeltaPos),
+	!.
+
+validmove(Plyr, State, 'n') :-
+	moves(Plyr, State, MV),
 	!,
 	MV = [].
 
@@ -273,16 +380,28 @@ validmove(Plyr, State, n) :- moves(Plyr, State, MV),
 %          the value of state (see handout on ideas about
 %          good heuristics.
 
+h(state, 100) :-
+	terminal(State), 
+	winner(State, 2),
+	!.
 
-h(S, 100) :- terminal(S),
-	score(S, SP1, SP2),
-	SP2 < SP1,
+h(state, -100) :-
+	terminal(State),
+	winner(State, 1),
 	!.
-h(S, -100) :- terminal(S),
-	score(S, SP1, SP2),
-	SP2 > SP1,
+
+	h(state, 0) :-
+	terminal(State),
+	tie(State),
 	!.
-h(_, 0).
+
+h(State, Val) :- 
+	moves(1, State, MvL1),
+	moves(2, State, MvL2),
+	length(MvL1, Len1),
+	length(MvL2, Len2),
+	Val is Len2 * 4 - Len1 * 4,
+	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -294,7 +413,7 @@ h(_, 0).
 %     of all states.
 
 
-lowerBound(-100).
+lowerBound(-101).
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -306,7 +425,7 @@ lowerBound(-100).
 %     of all states.
 
 
-upperBound(100).
+upperBound(101).
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
