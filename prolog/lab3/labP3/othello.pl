@@ -1,3 +1,4 @@
+% Niklas Lundberg
 /* ------------------------------------------------------- */
 %
 %    D7012E Declarative languages
@@ -37,7 +38,7 @@
 %          * moves(Plyr,State,MvList)				Done
 %          * nextState(Plyr,Move,State,NewState,NextPlyr)       Done
 %          * validmove(Plyr,State,Proposed)                     Done
-%          * h(State,Val)  (see question 2 in the handout)	
+%          * h(State,Val)  (see question 2 in the handout)	Done
 %          * lowerBound(B)					Done
 %          * upperBound(B)					Done
 % /* ------------------------------------------------------ */
@@ -98,6 +99,22 @@ initialize(InitialState, 1) :- initBoard(InitialState).
 %     - returns winning player if State is a terminal position and
 %     Plyr has a higher score than the other player 
 
+winner(State, 1) :-
+	terminal(State), 
+	score(State, SP1, SP2),
+	SP1 < SP2,
+	!.
+
+winner(State, 2) :-
+	terminal(State), 
+	score(State, SP1, SP2),
+	SP1 > SP2,
+	!.
+
+
+
+% Calculates the score of both plyers.
+% score(State, Score Player 1, Score Plyer2).
 
 score([], 0, 0) :-
 	!.
@@ -124,17 +141,6 @@ score([X|XS], SP1, SP2) :-
 	!.
 
 
-winner(State, 1) :-
-	terminal(State), 
-	score(State, SP1, SP2),
-	SP1 < SP2,
-	!.
-
-winner(State, 2) :-
-	terminal(State), 
-	score(State, SP1, SP2),
-	SP1 > SP2,
-	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -203,48 +209,44 @@ printList([H | L]) :-
 %% 
 %% define moves(Plyr,State,MvList). 
 %   - returns list MvList of all legal moves Plyr can make in State
-%
-
-
-validMoves(Plyr, State, [5, 5], MvList) :- 
-	validmove(Plyr, State, [5, 5]),
-	!,
-	MvList = [[5, 5]];
-	MvList = [],
-	!.
-
-validMoves(Plyr, State, [X, 5], MvList) :- 
-	validmove(Plyr, State, [X, 5]),
-	!,
-	X1 is X + 1,
-	validMoves(Plyr, State, [X1, 0], Rest),
-	MvList = [[X, 5]|Rest],
-	!;
-
-	X1 is X + 1,
-	validMoves(Plyr, State, [X1, 0], MvList),
-	!.
-
-validMoves(Plyr, State, [X, Y], MvList) :-
-	validmove(Plyr, State, [X, Y]),
-	!,
-	Y1 is Y + 1,
-	validMoves(Plyr, State, [X, Y1], Rest),
-	MvList = [[X, Y]|Rest],
-	!;
-	
-	Y1 is Y + 1,
-	validMoves(Plyr, State, [X, Y1], MvList),
-	!.
-
-noMoves([], ['n']).
-noMoves(MvList, MvList).
 
 moves(Plyr, State, MvList) :-
-	validMoves(Plyr, State, [0, 0], MvL),
+	allMoves(AllMv),
+	validMoves(Plyr, State, AllMv, MvL),
 	!,
 	noMoves(MvL, MvList),
 	!.
+
+% All positions on the board in order.
+allMoves([
+	[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5],
+	[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5],
+	[2, 0], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5],
+	[3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5],
+	[4, 0], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5],
+	[5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5]
+	]).
+
+% Add move 'n' if input list is empty, otherwise it does nothing.
+noMoves([], ['n']).
+noMoves(MvList, MvList).
+
+
+% Removes all unvalid moves from the list sent in.
+% validMoves(Player, State, InputList, Valid Move List).
+validMoves(_, _, [], []).
+
+validMoves(Plyr, State, [M|MS], [M|Rest]) :-
+	validmove(Plyr, State, M),
+	!,
+	validMoves(Plyr, State, MS, Rest),
+	!.
+
+validMoves(Plyr, State, [_|MS], Rest) :-
+	validMoves(Plyr, State, MS, Rest),
+	!.
+
+
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -254,13 +256,28 @@ moves(Plyr, State, MvList) :-
 %% define nextState(Plyr,Move,State,NewState,NextPlyr). 
 %   - given that Plyr makes Move in State, it determines NewState (i.e. the next 
 %     state) and NextPlayer (i.e. the next player who will move).
-%
+
+nextState(Plyr, 'n', State, State, NextPlyr) :-
+	validmove(Plyr, State, 'n'),
+	!,
+	otherPlyr(Plyr, NextPlyr),
+	!.
+
+nextState(Plyr, Move, State1, State3, NextPlyr) :-
+	otherPlyr(Plyr, NextPlyr),
+	set(State1, State2, Move, Plyr),
+	!,
+	flip(Plyr, State2, Move, State3),
+	!.
 
 
+% Return the other Pl
 otherPlyr(1, 2).
 otherPlyr(2, 1).
 
 
+% Flip all flipable tokens in one direction.
+% flipDir(Player, Original State, Fliped state, Position, Direction, Resulting state).
 flipDir(Plyr, _,  State, Pos, _, State) :-
 	get(State, Pos, Plyr),
 	!.
@@ -279,6 +296,7 @@ flipDir(Plyr, OState, State, [X, Y], [DX, DY], NewState) :-
 flipDir(_, OState, _, _, _, OState).
 
 
+% Flips all flipable pices in all directions.
 flip(Plyr, State1, [X, Y], State9) :- 
 	XP is X + 1, XM is X - 1,
 	YP is Y + 1, YM is Y - 1,
@@ -300,18 +318,6 @@ flip(Plyr, State1, [X, Y], State9) :-
 	!.
 
 
-nextState(Plyr, 'n', State, State, NextPlyr) :-
-	validmove(Plyr, State, 'n'),
-	!,
-	otherPlyr(Plyr, NextPlyr),
-	!.
-
-nextState(Plyr, Move, State1, State3, NextPlyr) :-
-	otherPlyr(Plyr, NextPlyr),
-	set(State1, State2, Move, Plyr),
-	!,
-	flip(Plyr, State2, Move, State3),
-	!.
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -320,8 +326,22 @@ nextState(Plyr, Move, State1, State3, NextPlyr) :-
 %% 
 %% define validmove(Plyr,State,Proposed). 
 %   - true if Proposed move by Plyr is valid at State.
-  
 
+validmove(Plyr, State, Pos) :- 
+	get(State, Pos, '.'),
+	!,
+	dirs(Pos, NextPos, DeltaPos),
+	checkFirst(Plyr, State, NextPos, DeltaPos),
+	!.
+
+validmove(Plyr, State, 'n') :-
+	moves(Plyr, State, MV),
+	!,
+	MV == ['n'].
+ 
+
+% Checks if there is 0 or multiple other player tokens followed by a Player token.
+% checkDir(Player, State, Position, Direction).
 checkDir(Plyr, State, Pos, _) :-
 	get(State, Pos, Plyr),
 	!.
@@ -336,6 +356,9 @@ checkDir(Plyr, State, [X, Y], [DX, DY]) :-
 	!.
 
 
+% checks if there is one other player token followed by 0 or more other player tokens
+% and ending in a player token.
+% checkFirst(Player, State, Position, Direction).
 checkFirst(Plyr, State, [X, Y], [DX, DY]) :-
 	otherPlyr(Plyr, OPlyr),
 	get(State, [X, Y], OPlyr),
@@ -345,7 +368,8 @@ checkFirst(Plyr, State, [X, Y], [DX, DY]) :-
 	checkDir(Plyr, State, [X1, Y1], [DX, DY]),
 	!.
 
-
+% Takes a positions and returns a adjacent position and a direction.
+% dirs(Position, adhacent position, Direction).
 dirs([X, Y], [XP, Y], [1, 0]) :- XP is X + 1.			% Right
 dirs([X, Y], [XM, Y], [-1, 0]) :- XM is X - 1.			% Left
 dirs([X, Y], [X, YP], [0, 1]) :- YP is Y + 1.			% Up
@@ -356,17 +380,6 @@ dirs([X, Y], [XM, YM], [-1, -1]) :- XM is X - 1, YM is Y - 1.	% Left Down
 dirs([X, Y], [XM, YP], [-1, 1]) :- XM is X - 1, YP is Y + 1.	% Left Up
 
 
-validmove(Plyr, State, Pos) :- 
-	get(State, Pos, '.'),
-	!,
-	dirs(Pos, NextPos, DeltaPos),
-	checkFirst(Plyr, State, NextPos, DeltaPos),
-	!.
-
-validmove(Plyr, State, 'n') :-
-	moves(Plyr, State, MV),
-	!,
-	MV == ['n'].
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
@@ -381,28 +394,163 @@ validmove(Plyr, State, 'n') :-
 %          the value of state (see handout on ideas about
 %          good heuristics.
 
-h(state, 100) :-
+h(State, -100) :-
 	terminal(State), 
 	winner(State, 2),
 	!.
 
-h(state, -100) :-
+h(State, 100) :-
 	terminal(State),
 	winner(State, 1),
 	!.
 
-	h(state, 0) :-
+h(State, 0) :-
 	terminal(State),
 	tie(State),
 	!.
 
 h(State, Val) :- 
-	moves(1, State, MvL1),
-	moves(2, State, MvL2),
-	length(MvL1, Len1),
-	length(MvL2, Len2),
-	Val is Len2 * 4 - Len1 * 4,
+	goodPos(GList),
+	badPos(BList),
+	count(1, State, BList, BP1),
+	count(2, State, GList, GP2),
+	count(2, State, BList, BP2),
+	numUnFlipAble(1, State, NUF1),
+	numUnFlipAble(2, State, NUF2),
+	Val is NUF2 + BP2 * 10 - NUF1 - BP1 * 5 - GP2,   % W/L/T 23/0/2
 	!.
+
+
+% Helper function for checking if a token is flipable.
+% checkFlip(Player, State, Position, Direction, Last Token).
+checkFlip(_, State, Pos, _, '.') :-
+	get(State, Pos, '.'),
+	!.
+
+checkFlip(Plyr, State, Pos, _, OPlyr) :-
+	otherPlyr(Plyr, OPlyr),
+	get(State, Pos, OPlyr),
+	!.
+
+checkFlip(Plyr, State, [X, Y], [DX, DY], Last) :-
+	get(State, [X, Y], Plyr),
+	!,
+	X1 is X + DX,
+	Y1 is Y + DY,
+	checkFlip(Plyr, State, [X1, Y1], [DX, DY], Last),
+	!.
+
+
+% Helper function for checking if a token is flipable.
+% checkFirstFlip(Player, State, Postition, Direction, Last Token).
+checkFirstFlip(Plyr, State, [X,Y], [DX, DY], Last) :-
+	get(State, [X, Y], Plyr),
+	!,
+	X1 is X + DX,
+	Y1 is Y + DY,
+	checkFlip(Plyr, State, [X1, Y1], [DX, DY], Last),
+	!.	
+
+% Helper function, that checks what last token is needed in the other direction
+% for the token to be flipable.
+neededForFlip(_, '.', '.').
+
+neededForFlip(Plyr, '.', OPlyr) :-
+	otherPlyr(Plyr, OPlyr),
+	!.
+
+neededForFlip(Plyr, OPlyr, '.') :-
+	otherPlyr(Plyr, OPlyr).
+
+
+% Checks that a token is flipable.
+flipAble(Plyr, State, Pos) :-
+	checkFirstFlip(Plyr, State, Pos, [1, 0], Last),
+	neededForFlip(Plyr, Last, Needed),
+	checkFirstFlip(Plyr, State, Pos, [-1, 0], Needed),
+	!.
+
+flipAble(Plyr, State, Pos) :-
+	checkFirstFlip(Plyr, State, Pos, [1, -1], Last),
+	neededForFlip(Plyr, Last, Needed),
+	checkFirstFlip(Plyr, State, Pos, [-1, 1], Needed),
+	!.
+
+flipAble(Plyr, State, Pos) :-
+	checkFirstFlip(Plyr, State, Pos, [0, 1], Last),
+	neededForFlip(Plyr, Last, Needed),
+	checkFirstFlip(Plyr, State, Pos, [0, -1], Needed),
+	!.
+
+flipAble(Plyr, State, Pos) :-
+	checkFirstFlip(Plyr, State, Pos, [1, 1], Last),
+	neededForFlip(Plyr, Last, Needed),
+	checkFirstFlip(Plyr, State, Pos, [-1, -1], Needed),
+	!.
+
+
+% Checks if a token is unflipable.
+unFlipAble(Plyr, State, Pos) :-
+	flipAble(Plyr, State, Pos),
+	!,
+	fail,
+	!.
+
+unFlipAble(Plyr, State, Pos) :-
+	get(State, Pos, Plyr).
+
+
+% Checks what position in a list is unflipable.
+unFlipAblePos(_, _, [], []).
+
+unFlipAblePos(Plyr, State, [M|MS], [M|Rest]) :-
+	unFlipAble(Plyr, State, M),
+	!,
+	unFlipAblePos(Plyr, State, MS, Rest),
+	!.
+
+unFlipAblePos(Plyr, State, [_|MS], Rest) :-
+	unFlipAblePos(Plyr, State, MS, Rest),
+	!.
+
+
+% Gets the number of unflipable tokens.
+numUnFlipAble(Plyr, State, Num) :-
+	allMoves(AllMv),
+	unFlipAblePos(Plyr, State, AllMv, MvList),
+	!,
+	length(MvList, Num),
+	!.
+
+
+% Good positions to take.
+goodPos([
+	[1, 0], [0, 1], [1, 1],
+	[5, 0], [6, 1], [5, 1],
+	[0, 5], [1, 6], [1, 5],
+	[6, 5], [5, 5], [5, 6]
+	]).
+
+% Bad positions to take.
+badPos([
+	[0, 0], [0, 6], [6, 0], [6, 6]
+	]).
+
+% Counts the number of time a player is in a list.
+count(_, _, [], 0).
+
+count(Plyr, State, [M|MS], Num) :-
+	get(State, M, Plyr),
+	!,
+	count(Plyr, State, MS, Rest),
+	Num is Rest + 1,
+	!.
+
+count(Plyr, State, [_|MS], Num) :-
+	count(Plyr, State, MS, Num).
+
+
+
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.

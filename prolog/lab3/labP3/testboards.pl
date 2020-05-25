@@ -11,8 +11,8 @@
 % Niklas results
 % Result: testBoard1(St),mmeval(2, St, Val, BestMv, 5, Sef).
 % Val = 0
-% BestMv = [0, 1]
-% Sef = 62285
+% BestMv = [1, 3]
+% Sef = 3171
 testBoard1([ [.,.,.,.,.,.], 
              [.,1,.,.,.,.],
              [.,.,2,1,.,.],
@@ -22,9 +22,9 @@ testBoard1([ [.,.,.,.,.,.],
 
 % Niklas results
 % Result: testBoard2(St),mmeval(2, St, Val, BestMv, 5, Sef).
-% Val = 0
-% BestMv = [0, 4]
-% Sef = 148642
+% Val = -2
+% BestMv = [3, 1]
+% Sef = 564
 testBoard2([ [.,2,.,.,.,2], 
              [.,.,1,.,1,.],
              [.,.,.,1,.,.],
@@ -34,9 +34,9 @@ testBoard2([ [.,2,.,.,.,2],
 
 % Niklas results
 % Result: testBoard3(St),mmeval(2, St, Val, BestMv, 5, Sef).
-% Val = 0
-% BestMv = [0, 4]
-% Sef = 84129
+% Val = -2
+% BestMv = [0, 1]
+% Sef = 13089
 testBoard3([ [.,.,.,2,.,.], 
              [.,2,.,1,1,.],
              [2,1,1,1,.,.],
@@ -251,5 +251,4 @@ forcing1toDoNullMoves([[.,.,.,.,.,.],
 		       [.,.,.,.,.,1],
 		       [.,.,.,.,.,1],
 		       [.,1,1,1,1,2]]).
-
 
